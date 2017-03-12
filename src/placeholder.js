@@ -27,7 +27,7 @@ function populateGameState() {
                 +r+","
                 +g+","
                 +b
-                +")\">"
+                +"); display:inline-block;\">"
                 +chars.charAt(charCount%chars.length);
                 +"</div>";
             tempRow.push(tempStr);
@@ -66,8 +66,10 @@ function movePlayer(direction) {
     }
 }
 function updateWindow() {
-    (document.getElementById("game-window")).innerHTML(gameStateToHtml());
+    (document.getElementById("game-window")).innerHTML=gameStateToHtml();
+    console.log("Hello, World!");
 }
+/*
 document.onkeypress(function(e) {
     var dir=-1;
     if(e.keyCode=38) {
@@ -84,7 +86,9 @@ document.onkeypress(function(e) {
     }
     movePlayer(dir);
 });
-document.ready(function() {
+*/
+$(document).ready(function() {
     populateGameState();
     updateWindow();
+    //$("div").fadeOut(1000);
 });
