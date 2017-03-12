@@ -6,7 +6,70 @@ var gameMap=[]; // 100x100 grid for now, should not use global vars,
     // but we can fix later
 var playerX=0;
 var playerY=0;
-
+/*
+class Tile {
+    constructor() {
+        this.owner=0; // 0 is not owned, 1 is player owned, 2+ are AI
+        this.farmBuf=0;
+        this.mineBuf=0;
+        this.bankBuf=0;
+        this.baseBuf=0;
+        this.labBuf=0;
+        this.courtBuf=0;
+        this.templeBuf=0;
+    }
+    // interface for setting tile info
+    setOwner: function(x) {
+        this.owner=x;
+    }
+    setFarmBuf: function(x) {
+        this.farmBuf=x;
+    }
+    setMineBuf: function(x) {
+        this.mineBuf=x;
+    }
+    setBankBuf: function(x) {
+        this.bankBuf=x;
+    }
+    setBaseBuf: function(x) {
+        this.baseBuf=x;
+    }
+    setLabBuf: function(x) {
+        this.labBuf=x;
+    }
+    setCourtBuf: function(x) {
+        this.courtBuf=x;
+    }
+    setTempleBuf: function(x) {
+        this.templeBuf=x;
+    }
+    // interface for getting tile info
+    getOwner: function() {
+        return this.owner;
+    }
+    getFarmBuf: function(x) {
+        return this.farmBuf;
+    }
+    getMineBuf: function(x) {
+        return this.mineBuf;
+    }
+    getBankBuf: function(x) {
+        return this.bankBuf;
+    }
+    getBaseBuf: function(x) {
+        return this.baseBuf;
+    }
+    getLabBuf: function(x) {
+        return this.labBuf;
+    }
+    getCourtBuf: function(x) {
+        return this.courtBuf;
+    }
+    getTempleBuf: function(x) {
+        return this.templeBuf;
+    }
+}
+*/
 function populateGameState() {
     gameMap=[];
     playerY=50;
@@ -33,6 +96,7 @@ function populateGameState() {
             tempRow.push(tempStr);
         }
         gameMap.push(tempRow);
+        console.log("Row "+k);
     }
 }
 function gameStateToHtml() {
