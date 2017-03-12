@@ -78,15 +78,18 @@ function populateGameState() {
     var r=2;
     var g=2;
     var b=2;
-    for(var k=0;k<100;k++) {
-        var tempRow=[];
-        var chars="qwerty";
+    var chars="qwerty";
+    var tempRow=[];
+    var tempStr="";
+    for(var k=0;k<10;k++) {
+        tempRow=[]
+        tempStr=""
         for(var k1=0;k1<100;k1++) {
             charCount++;
             r=(r*r)%265;
             g=(g*g*g)%256;
             b=(b*b*b*b)%256; // shitty rng
-            tempStr="<div style=\"color:rgb("+
+            tempStr=tempStr+"<div style=\"color:rgb("+
                 +r+","
                 +g+","
                 +b
@@ -95,7 +98,7 @@ function populateGameState() {
                 +"</div>";
             tempRow.push(tempStr);
         }
-        gameMap.push(tempRow);
+        gameMap.push([tempStr]);
         console.log("Row "+k);
     }
 }
@@ -153,6 +156,7 @@ document.onkeypress(function(e) {
 */
 $(document).ready(function() {
     populateGameState();
+    //gameMap=["buttwhole"];
     updateWindow();
     //$("div").fadeOut(1000);
 });
