@@ -2,8 +2,11 @@ const UP=1; // macros like this are fine
 const RIGHT=2;
 const DOWN=3;
 const LEFT=4;
+const WINDOW_HEIGHT=50;
+const WINDOW_WIDTH=100;
 var gameMap=[]; // 100x100 grid for now, should not use global vars,
     // but we can fix later
+
 var playerX=0;
 var playerY=0;
 /*
@@ -72,53 +75,56 @@ class Tile {
 */
 function populateGameState() {
     gameMap=[];
-    playerY=50;
+    playerY=25;
     playerX=50;
     var charCount=0;
-    var r=2;
-    var g=2;
-    var b=2;
+    var r=3;
+    var g=5;
+    var b=7;
     var chars="qwerty";
     var tempRow=[];
     var tempStr="";
-    for(var k=0;k<10;k++) {
+    for(var k=0;k<WINDOW_HEIGHT;k++) {
         tempRow=[]
         tempStr=""
-        for(var k1=0;k1<100;k1++) {
+        for(var k1=0;k1<WINDOW_WIDTH;k1++) {
             charCount++;
             r=(r*r)%265;
             g=(g*g*g)%256;
             b=(b*b*b*b)%256; // shitty rng
-            tempStr=tempStr+"<div style=\"color:rgb("+
+            tempStr="<div "
+                +"id=\"x"+k1+"y"+k+"\" "
+                +"style=\"color:rgb("+
                 +r+","
                 +g+","
                 +b
-                +"); display:inline-block;\">"
-                +chars.charAt(charCount%chars.length);
-                +"</div>";
+                +"); display:inline-block;\"><span style=\"background-color:#000010; line-height:0%;\">"
+                +chars.charAt(charCount%chars.length)
+                +"</span></div>";
             tempRow.push(tempStr);
         }
-        gameMap.push([tempStr]);
-        console.log("Row "+k);
+        gameMap.push(tempRow);
     }
 }
 function gameStateToHtml() {
     var ret="";
     for(var k=0;k<gameMap.length;k++) {
-        ret=ret+"<p>"
+        ret=ret+"<p>";
         for(var k1=0;k1<gameMap[k].length;k1++) {
-            if(playerY==k && playerX==k1) {
-                ret=ret+"<b>"+gameMap[k][k1]+"</b>"
-            }
-            else {
-                ret=ret+gameMap[k][k1];
-            }
+            ret=ret+gameMap[k][k1];
         }
         ret=ret+"</p>";
     }
     return ret;
 }
+function updateWindow() {
+    (document.getElementById("game-window")).innerHTML=gameStateToHtml();
+    var oldHtml=document.getElementById("x"+playerX+"y"+playerY).innerHTML;
+    document.getElementById("x"+playerX+"y"+playerY).innerHTML="<b>"+oldHtml+"</b>";
+}
 function movePlayer(direction) {
+    var oldHtml=document.getElementById("x"+playerX+"y"+playerY).innerHTML;
+    document.getElementById("x"+playerX+"y"+playerY).innerHTML=oldHtml.slice(3,-4);
     if(direction==UP) {
         playerY--;
     }
@@ -131,32 +137,35 @@ function movePlayer(direction) {
     if(direction==RIGHT) {
         playerX++;
     }
+    playerY=playerY%WINDOW_HEIGHT;
+    playerX=playerX%WINDOW_WIDTH;
+    oldHtml=document.getElementById("x"+playerX+"y"+playerY).innerHTML;
+    document.getElementById("x"+playerX+"y"+playerY).innerHTML="<b>"+oldHtml+"</b>";
+    updateWindow();
 }
-function updateWindow() {
-    (document.getElementById("game-window")).innerHTML=gameStateToHtml();
-    console.log("Hello, World!");
-}
-/*
-document.onkeypress(function(e) {
+$(document).keypress(function(event) {
+    var moveChar="x";
     var dir=-1;
-    if(e.keyCode=38) {
+    if(String.fromCharCode(event.which)=="w") {
+        console.log("up");
         dir=UP;
     }
-    if(e.keyCode==39) {
+    if(String.fromCharCode(event.which)=="d") {
+        console.log("right");
         dir=RIGHT;
     }
-    if(e.keyCode==40) {
+    if(String.fromCharCode(event.which)=="s") {
+        console.log("down");
         dir=DOWN;
     }
-    if(e.keyCode==37) {
+    if(String.fromCharCode(event.which)=="a") {
+        console.log("left");
         dir=LEFT;
     }
     movePlayer(dir);
 });
-*/
+
 $(document).ready(function() {
     populateGameState();
-    //gameMap=["buttwhole"];
     updateWindow();
-    //$("div").fadeOut(1000);
 });
