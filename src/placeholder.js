@@ -1,124 +1,147 @@
-const UP=1; // macros like this are fine
+// macros like this are fine
+// window size macros
+const WINDOW_HEIGHT=50;
+const WINDOW_WIDTH=100;
+// direction macros
+const UP=1;
 const RIGHT=2;
 const DOWN=3;
 const LEFT=4;
-const WINDOW_HEIGHT=50;
-const WINDOW_WIDTH=100;
+// tile land type macros
+const BORINGLAND=0;
+const FARMLAND=1;
+const SAND=2;
+const WATER=3;
+const ROCK=4;
+// tile structure type
+const NOSTRUCT=0;
+const FARM=1;
+const MINE=2;
+const BASE=3
+const BANK=4;
+// the gamestate
 var gameMap=[]; // 100x100 grid for now, should not use global vars,
     // but we can fix later
-
-var playerX=0;
+var playerX=0; //
 var playerY=0;
-/*
-class Tile {
-    constructor() {
-        this.owner=0; // 0 is not owned, 1 is player owned, 2+ are AI
-        this.farmBuf=0;
-        this.mineBuf=0;
-        this.bankBuf=0;
-        this.baseBuf=0;
-        this.labBuf=0;
-        this.courtBuf=0;
-        this.templeBuf=0;
-    }
-    // interface for setting tile info
-    setOwner: function(x) {
-        this.owner=x;
-    }
-    setFarmBuf: function(x) {
-        this.farmBuf=x;
-    }
-    setMineBuf: function(x) {
-        this.mineBuf=x;
-    }
-    setBankBuf: function(x) {
-        this.bankBuf=x;
-    }
-    setBaseBuf: function(x) {
-        this.baseBuf=x;
-    }
-    setLabBuf: function(x) {
-        this.labBuf=x;
-    }
-    setCourtBuf: function(x) {
-        this.courtBuf=x;
-    }
-    setTempleBuf: function(x) {
-        this.templeBuf=x;
-    }
-    // interface for getting tile info
-    getOwner: function() {
-        return this.owner;
-    }
-    getFarmBuf: function(x) {
-        return this.farmBuf;
-    }
-    getMineBuf: function(x) {
-        return this.mineBuf;
-    }
-    getBankBuf: function(x) {
-        return this.bankBuf;
-    }
-    getBaseBuf: function(x) {
-        return this.baseBuf;
-    }
-    getLabBuf: function(x) {
-        return this.labBuf;
-    }
-    getCourtBuf: function(x) {
-        return this.courtBuf;
-    }
-    getTempleBuf: function(x) {
-        return this.templeBuf;
-    }
+// some object prototypes
+var blankTile={
+    owner:0, // 0 is not owned, 1 is player owned, 2+ are AI
+    farmBuf:0, // bufs should be double from 0 to 1
+    mineBuf:0,
+    bankBuf:0,
+    baseBuf:0,
+    labBuf:0,
+    courtBuf:0,
+    templeBuf:0,
+    landType:0, // see macros above
+    structType:0 // see macros above
+};
+// basic functions
+function randomTile() {
+    var tile=blankTile;
+    tile.owner=Math.floor(Math.random()*3); // 0 is not owned, 1 is player owned, 2+ are AI
+    tile.farmBuf=Math.random();//(tileCount%5)/5.0; // bufs should be double from 0 to 1
+    tile.mineBuf=Math.random();
+    tile.bankBuf=Math.random();
+    tile.baseBuf=Math.random();
+    tile.landType=Math.floor(Math.random()*5); // see macros above
+    tile.structType=Math.floor(Math.random()*5); // see macros above
+    return tile;
 }
-*/
 function populateGameState() {
     gameMap=[];
     playerY=25;
     playerX=50;
-    var charCount=0;
-    var r=3;
-    var g=5;
-    var b=7;
-    var chars="qwerty";
     var tempRow=[];
     var tempStr="";
     for(var k=0;k<WINDOW_HEIGHT;k++) {
         tempRow=[]
-        tempStr=""
         for(var k1=0;k1<WINDOW_WIDTH;k1++) {
-            charCount++;
-            r=(r*r)%265;
-            g=(g*g*g)%256;
-            b=(b*b*b*b)%256; // shitty rng
-            tempStr="<div "
-                +"id=\"x"+k1+"y"+k+"\" "
-                +"style=\"color:rgb("+
-                +r+","
-                +g+","
-                +b
-                +"); display:inline-block;\"><span style=\"background-color:#000010; line-height:0%;\">"
-                +chars.charAt(charCount%chars.length)
-                +"</span></div>";
-            tempRow.push(tempStr);
+            var tile=randomTile();
+            tempRow.push(tile);
         }
         gameMap.push(tempRow);
     }
 }
-function gameStateToHtml() {
+function tileToHtml(tile,x,y) {
+    var ret="";
+    var background="background-color:rgb(";
+    var tileChar="";
+    var r=0;
+    var g=0;
+    var b=0;
+    if(tile.landType==FARMLAND) {
+        if(tile.farmBuf>0.5) {
+            g=256;
+        }
+        else {
+            g=128;
+        }
+    }
+    else if(tile.landType==SAND) {
+        if(tile.bankBuf>0.5) {
+            g=256;
+            b=256;
+        }
+        else {
+            g=128;
+            b=128;
+        }
+    }
+    else if(tile.landType==WATER) {
+        b=256;
+    }
+    else if(tile.landType==ROCK) {
+        if(tile.mineBuf>0.5) {
+            ; // do nothing
+        }
+        else {
+            r=128;
+            g=128;
+            b=128;
+        }
+    }
+    else { // if(tile.landType==BORINGLAND)
+        r=256;
+        b=256;
+        g=256;
+    }
+    background=background+r+","+g+","+b+");"
+    if(tile.structType==FARM) {
+        tileChar="Ψ";
+    }
+    else if(tile.structType==MINE) {
+        tileChar="R";
+    }
+    else if(tile.structType==BASE) {
+        tileChar="垒";
+    }
+    else if(tile.structType==BANK) {
+        tileChar="$";
+    }
+    else if(tile.structType==NOSTRUCT) {
+        tileChar="/";
+    }
+    else {
+        tileChar="\\";
+    }
+    ret="<span id=\"x"+x+"y"+y+"\" style=\""+background+" line-height:0px;\">"+tileChar+"</span>";
+    return ret;
+}
+function gameMapToHtml() {
     var ret="";
     for(var k=0;k<gameMap.length;k++) {
         ret=ret+"<p>";
         for(var k1=0;k1<gameMap[k].length;k1++) {
-            ret=ret+gameMap[k][k1];
+            ret=ret+tileToHtml(gameMap[k][k1],k1,k);
         }
         ret=ret+"</p>";
     }
     return ret;
 }
 function updateWindow() {
-    (document.getElementById("game-window")).innerHTML=gameStateToHtml();
+    (document.getElementById("game-window")).innerHTML=gameMapToHtml();
     var oldHtml=document.getElementById("x"+playerX+"y"+playerY).innerHTML;
     document.getElementById("x"+playerX+"y"+playerY).innerHTML="<b>"+oldHtml+"</b>";
 }
@@ -143,6 +166,7 @@ function movePlayer(direction) {
     document.getElementById("x"+playerX+"y"+playerY).innerHTML="<b>"+oldHtml+"</b>";
     updateWindow();
 }
+// jQuery functions
 $(document).keypress(function(event) {
     var moveChar="x";
     var dir=-1;
@@ -164,7 +188,6 @@ $(document).keypress(function(event) {
     }
     movePlayer(dir);
 });
-
 $(document).ready(function() {
     populateGameState();
     updateWindow();
