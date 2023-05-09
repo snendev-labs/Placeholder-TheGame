@@ -166,29 +166,29 @@ function movePlayer(direction) {
     document.getElementById("x"+playerX+"y"+playerY).innerHTML="<b>"+oldHtml+"</b>";
     updateWindow();
 }
-// jQuery functions
-$(document).keypress(function(event) {
-    var moveChar="x";
-    var dir=-1;
-    if(String.fromCharCode(event.which)=="w") {
-        console.log("up");
-        dir=UP;
-    }
-    if(String.fromCharCode(event.which)=="d") {
-        console.log("right");
-        dir=RIGHT;
-    }
-    if(String.fromCharCode(event.which)=="s") {
-        console.log("down");
-        dir=DOWN;
-    }
-    if(String.fromCharCode(event.which)=="a") {
-        console.log("left");
-        dir=LEFT;
-    }
-    movePlayer(dir);
-});
-$(document).ready(function() {
+function addKeyDownListener() {
     populateGameState();
     updateWindow();
-});
+    document.addEventListener("keydown", function(event) {
+        var moveChar="x";
+        var dir=-1;
+        if(event.key.toLowerCase()=="w") {
+            console.log("up");
+            dir=UP;
+        }
+        if(event.key.toLowerCase()=="d") {
+            console.log("right");
+            dir=RIGHT;
+        }
+        if(event.key.toLowerCase()=="s") {
+            console.log("down");
+            dir=DOWN;
+        }
+        if(event.key.toLowerCase()=="a") {
+            console.log("left");
+            dir=LEFT;
+        }
+        movePlayer(dir);
+    });
+}
+document.addEventListener('DOMContentLoaded', addKeyDownListener, false);
